@@ -1,0 +1,1 @@
+Thread ID:'36' 'PASS' Entered value 'standard_user' in 'User Name' text box
