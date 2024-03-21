@@ -1,4 +1,0 @@
-INFO - 13-03-2024 15:38:47 - Login - lauchApplication - Thread ID:'36' 'PASS' opened applicaion 'http://adactin.com/HotelApp/index.php'
-INFO - 13-03-2024 15:38:48 - UIUtils - type - Thread ID:'36' 'PASS' Entered value 'kmanubolu' in 'UserName' text box
-INFO - 13-03-2024 15:38:48 - UIUtils - type - Thread ID:'36' 'PASS' Entered value '' in 'Password' text box
-INFO - 13-03-2024 15:38:50 - UIUtils - clickElement - Thread ID:'36' 'PASS' Clicked on 'Login' button

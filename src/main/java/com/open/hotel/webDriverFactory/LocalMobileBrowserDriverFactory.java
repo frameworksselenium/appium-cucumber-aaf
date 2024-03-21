@@ -3,6 +3,8 @@ package com.open.hotel.webDriverFactory;
 import com.open.hotel.config.Config;
 import com.open.hotel.logger.LoggerClass;
 import com.open.hotel.threadVariables.VariableManager;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -10,9 +12,12 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,76 +36,50 @@ public class LocalMobileBrowserDriverFactory {
         return instance;
     }
 
-    public WebDriver createNewDriver(String browser) {
+    public WebDriver createNewDriver(String browser, String RemoteURL) {
+        String Mobile_Application_Type = Config.properties.getProperty("Mobile_Application_Type");
         WebDriver driver = null;
-        if (browser.toUpperCase().contains("CH")) {
-            String downloadFolderPath = System.getProperty("user.dir") + "//target//DownloadFiles";
-            Config.createFolder(downloadFolderPath);
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            String dateAndTimeStamp = String.valueOf(timestamp.getTime());
-            String downloadFileFolder = downloadFolderPath + "_" + dateAndTimeStamp + "_" + Thread.currentThread().getId();
-            Config.createFolder(downloadFileFolder);
-            VariableManager.getInstance().getVariables().setVar("downloadFileFolder", downloadFileFolder);
+        URL url = null;
+        MutableCapabilities caps = null;
+        try {
+            switch (Mobile_Application_Type) {
 
-            // Use File.separator as it will work on any OS
-            Map<String, Object> prefs = new HashMap<String, Object>();
-            prefs.put("download.prompt_for_download", false);
-            prefs.put("download.directory_upgrade", true);
-            prefs.put("profile.default_content_settings.popups", 0);
-            prefs.put("profile.default_content_setting_values.automatic_downloads",1);
-            prefs.put("download.default_directory", downloadFileFolder);
+                case "Local_Mobile_Android_Web_Emulator":
+                    caps = new MutableCapabilities();
+                    HashMap<String, Object> browserstackOptions = new HashMap<String, Object>();
+                    browserstackOptions.put("browserName", "chrome");
+                    browserstackOptions.put("deviceName", "Samsung Galaxy S23 Ultra");
+                    browserstackOptions.put("realMobile", "true");
+                    browserstackOptions.put("osVersion", "13.0");
+                    caps.setCapability("bstack:options", browserstackOptions);
 
-            ChromeOptions browserOptions = new ChromeOptions();
-            browserOptions.setBinary("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
-            //browserOptions.setExperimentalOption("prefs", prefs);
-            //browserOptions.setPlatformName(PlatformName);
-           // browserOptions.addArguments("--remote-allow-origins=*");
-            //browserOptions.setBrowserVersion("latest");
-            //WebDriverManager.chromedriver().setup();
-            try {
-                driver = new ChromeDriver(browserOptions);
-                //driver = new ChromeDriver();
-                driver.manage().window().maximize();
-            } catch (Exception e) {
-                log.info("Thread ID:'" + Thread.currentThread().getId() + "' 'FAIL' " + e.getMessage());
-                throw new RuntimeException(e);
+                    try {
+                        url = new URL(RemoteURL);
+                        driver = new RemoteWebDriver(url, caps);
+                        driver.manage().window().maximize();
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
+
+                case "Local_Mobile_IOS_Web_Simulator":
+                    caps = new MutableCapabilities();
+                    caps.setCapability("browserName", "safari");
+                    caps.setCapability("deviceName", "iPhone 15 Pro Max");
+                    caps.setCapability("platformVersion", "17.0");
+                    caps.setCapability("automationName","XCUITest");
+                    caps.setCapability("platformName","IOS");
+                    try {
+                        url = new URL(RemoteURL);
+                        driver = new RemoteWebDriver(url, caps);
+                        driver.manage().window().maximize();
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
             }
-        }
-        if (browser.toUpperCase().contains("FF")) {
-            FirefoxOptions browserOptions = new FirefoxOptions();
-            browserOptions.setPlatformName("windows");
-            browserOptions.setBrowserVersion("latest");
-            try {
-                driver = new FirefoxDriver();
-                driver.manage().window().maximize();
-            } catch (Exception e) {
-                log.info("Thread ID:'" + Thread.currentThread().getId() + "' 'FAIL' " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
-        if (browser.toUpperCase().contains("ED")) {
-            EdgeOptions browserOptions = new EdgeOptions();
-            browserOptions.setPlatformName("windows");
-            browserOptions.setBrowserVersion("latest");
-            try {
-                driver = new EdgeDriver();
-                driver.manage().window().maximize();
-            } catch (Exception e) {
-                log.info("Thread ID:'" + Thread.currentThread().getId() + "' 'FAIL' " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
-        if (browser.toUpperCase().contains("SF")) {
-            SafariOptions browserOptions = new SafariOptions();
-            browserOptions.setPlatformName("windows");
-            browserOptions.setBrowserVersion("latest");
-            try {
-                driver = new SafariDriver();
-                driver.manage().window().maximize();
-            } catch (Exception e) {
-                log.info("Thread ID:'" + Thread.currentThread().getId() + "' 'FAIL' " + e.getMessage());
-                throw new RuntimeException(e);
-            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
         return driver;
     }

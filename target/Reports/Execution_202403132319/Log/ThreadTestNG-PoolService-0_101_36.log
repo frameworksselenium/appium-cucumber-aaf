@@ -1,5 +1,0 @@
-INFO - 13-03-2024 23:19:41 - UIUtils - clickElement - Thread ID:'36' 'PASS' Clicked on 'User Name' button
-INFO - 13-03-2024 23:19:44 - UIUtils - type - Thread ID:'36' 'PASS' Entered value 'standard_user' in 'User Name' text box
-INFO - 13-03-2024 23:19:47 - UIUtils - clickElement - Thread ID:'36' 'PASS' Clicked on 'Password' button
-INFO - 13-03-2024 23:19:50 - UIUtils - type - Thread ID:'36' 'PASS' Entered value '' in 'Password' text box
-INFO - 13-03-2024 23:19:53 - UIUtils - clickElement - Thread ID:'36' 'PASS' Clicked on 'Login' button
